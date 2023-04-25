@@ -17,7 +17,7 @@ enum class Orientation
 {
     COUNTERCLOCKWISE,
     CLOCKWISE,
-    COLINEAR
+    COLLINEAR
 };
 
 /// @brief Class that stores available Convex Hull algorithms for selection
@@ -98,7 +98,8 @@ inline bool comparePolarAngle(const Point<T> &ref, const Point<T> &p1, const Poi
 }
 
 /// @brief Function to check if three points form a clockwise or counterclockwise order
-template <typename T> Orientation getOrientation(const Point<T> &p1, const Point<T> &p2, const Point<T> &p3) noexcept
+template <typename T>
+inline Orientation getOrientation(const Point<T> &p1, const Point<T> &p2, const Point<T> &p3) noexcept
 {
     const auto cross_product = crossProduct(p1, p2, p3);
 
@@ -112,7 +113,7 @@ template <typename T> Orientation getOrientation(const Point<T> &p1, const Point
     }
     else
     {
-        return Orientation::COLINEAR;
+        return Orientation::COLLINEAR;
     }
 }
 
@@ -396,9 +397,9 @@ std::vector<int> constructConvexHull(const std::vector<Point<T>> &points,
                                      ConvexHullAlgorithm algorithm = ConvexHullAlgorithm::GRAHAM_SCAN,
                                      Orientation orientation = Orientation::COUNTERCLOCKWISE)
 {
-    if (orientation == Orientation::COLINEAR)
+    if (orientation == Orientation::COLLINEAR)
     {
-        std::cerr << "Orientation::COLINEAR only supported internally. Returning empty hull." << std::endl;
+        std::cerr << "Orientation::COLLINEAR only supported internally. Returning empty hull." << std::endl;
         return {};
     }
 

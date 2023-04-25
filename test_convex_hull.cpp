@@ -10,7 +10,7 @@ int main()
 
     int num_pts = 99'999;
     int coords_range = 1000;
-    bool print_results = false;
+    bool print_results = true;
     auto orientation = Orientation::CLOCKWISE;
 
     // Seed the random number generator with the current time
@@ -54,6 +54,17 @@ int main()
         {
             std::cout << "Hull is oriented clockwise" << std::endl;
         }
+
+        // Print hull indices
+        if (print_results)
+        {
+            std::cout << "Convex Hull Indices:" << std::endl;
+            for (int index : hull_indices1)
+            {
+                std::cout << index << " ";
+            }
+            std::cout << std::endl;
+        }
     }
 
     // Construct convex hull using ANDREW MONOTONE CHAIN
@@ -83,6 +94,17 @@ int main()
         else if (orientation == Orientation::CLOCKWISE)
         {
             std::cout << "Hull is oriented clockwise" << std::endl;
+        }
+
+        // Print hull indices
+        if (print_results)
+        {
+            std::cout << "Convex Hull Indices:" << std::endl;
+            for (int index : hull_indices2)
+            {
+                std::cout << index << " ";
+            }
+            std::cout << std::endl;
         }
     }
 
@@ -114,6 +136,17 @@ int main()
         {
             std::cout << "Hull is oriented clockwise" << std::endl;
         }
+
+        // Print hull indices
+        if (print_results)
+        {
+            std::cout << "Convex Hull Indices:" << std::endl;
+            for (int index : hull_indices3)
+            {
+                std::cout << index << " ";
+            }
+            std::cout << std::endl;
+        }
     }
 
     // Construct convex hull using CHAN's algorithm
@@ -143,6 +176,17 @@ int main()
         else if (orientation == Orientation::CLOCKWISE)
         {
             std::cout << "Hull is oriented clockwise" << std::endl;
+        }
+
+        // Print hull indices
+        if (print_results)
+        {
+            std::cout << "Convex Hull Indices:" << std::endl;
+            for (int index : hull_indices4)
+            {
+                std::cout << index << " ";
+            }
+            std::cout << std::endl;
         }
     }
 
