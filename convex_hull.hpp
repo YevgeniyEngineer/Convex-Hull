@@ -346,7 +346,8 @@ std::pair<std::vector<std::vector<T>>, std::vector<std::vector<int>>> partitionV
 }
 
 /// @brief Construct Convex Hull using Chan's algorithm, based on Andrew's Monotone Chain and Jarvis March
-template <typename T> std::vector<int> constructChanConvexHull(std::vector<Point<T>> points, Orientation orientation)
+template <typename T>
+std::vector<int> constructChanConvexHull(const std::vector<Point<T>> &points, Orientation orientation)
 {
     int n = static_cast<int>(points.size());
     if (n < 3)
@@ -394,12 +395,13 @@ template <typename T> std::vector<int> constructChanConvexHull(std::vector<Point
 
     // Convert the indices of the merged_points vector back to the original points vector
     std::vector<int> original_indices(hull_indices.size());
-    for (size_t i = 0; i < hull_indices.size(); ++i)
+    for (int i = 0; i < hull_indices.size(); ++i)
     {
         original_indices[i] = merged_indices[hull_indices[i]];
     }
     return original_indices;
 }
+
 /// @brief Main method that calls relevant functions based on provided inputs
 template <typename T>
 std::vector<int> constructConvexHull(const std::vector<Point<T>> &points,
