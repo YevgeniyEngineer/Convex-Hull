@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.18 FATAL_ERROR)
 
 project(convex_hull)
 
+set(ADD_PYTHON_BINDING TRUE)
+
 # Compillation instructions
 # cd build
 # cmake -DCMAKE_BUILD_TYPE=Release ..
@@ -10,7 +12,7 @@ project(convex_hull)
 # Dynamic library
 add_library(${PROJECT_NAME}
     INTERFACE
-    convex_hull_3d.hpp
+    convex_hull.hpp
 )
 set_target_properties(${PROJECT_NAME}
     PROPERTIES
@@ -29,10 +31,9 @@ add_library(convex_hull::convex_hull
     ${PROJECT_NAME}
 )
 
-# Add test
-set(TEST_NAME test_${PROJECT_NAME})
-add_executable(${TEST_NAME} test_convex_hull_3d.cpp)
-target_link_libraries(${TEST_NAME}
+# Test
+add_executable(test_convex_hull test_convex_hull.cpp)
+target_link_libraries(test_convex_hull
     PRIVATE
     convex_hull::convex_hull
 )
