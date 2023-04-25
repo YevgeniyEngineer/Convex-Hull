@@ -8,7 +8,7 @@ int main()
 {
     using namespace geom;
 
-    int num_pts = 100000;
+    int num_pts = 100'000;
     int coords_range = 1000;
     bool print_results = false;
 
@@ -29,7 +29,7 @@ int main()
     auto t1 = std::chrono::high_resolution_clock::now();
 
     std::vector<int> hull_indices =
-        constructConvexHull(points, ConvexHullAlgorithm::GRAHAM_ANDREW, Orientation::COUNTERCLOCKWISE);
+        constructConvexHull(points, ConvexHullAlgorithm::GRAHAM_ANDREW, Orientation::CLOCKWISE);
 
     auto t2 = std::chrono::high_resolution_clock::now();
 

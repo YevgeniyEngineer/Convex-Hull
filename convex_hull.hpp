@@ -49,18 +49,18 @@ template <typename T> struct Point
 /// @brief Function to return the cross product of two vectors (p1, p2) and (p1, p3)
 template <typename T> inline T crossProduct(const Point<T> &p1, const Point<T> &p2, const Point<T> &p3) noexcept
 {
-    auto x1 = p2.x - p1.x;
-    auto y1 = p2.y - p1.y;
-    auto x2 = p3.x - p1.x;
-    auto y2 = p3.y - p1.y;
+    const auto x1 = p2.x - p1.x;
+    const auto y1 = p2.y - p1.y;
+    const auto x2 = p3.x - p1.x;
+    const auto y2 = p3.y - p1.y;
     return x1 * y2 - x2 * y1;
 }
 
 /// @brief Helper function to compute the square of the Euclidean distance between two points
 template <typename T> inline T squaredDistance(const Point<T> &p1, const Point<T> &p2) noexcept
 {
-    auto dx = p2.x - p1.x;
-    auto dy = p2.y - p1.y;
+    const auto dx = p2.x - p1.x;
+    const auto dy = p2.y - p1.y;
     return dx * dx + dy * dy;
 }
 
@@ -68,12 +68,12 @@ template <typename T> inline T squaredDistance(const Point<T> &p1, const Point<T
 template <typename T>
 inline bool comparePolarAngle(const Point<T> &ref, const Point<T> &p1, const Point<T> &p2) noexcept
 {
-    int crossProd = crossProduct(ref, p1, p2);
-    if (crossProd == 0)
+    const auto cross_product = crossProduct(ref, p1, p2);
+    if (cross_product == 0)
     {
         return squaredDistance(ref, p1) < squaredDistance(ref, p2);
     }
-    return (crossProd > 0);
+    return (cross_product > 0);
 }
 
 /// @brief Class that stores orientation formed by three 2D points
@@ -87,7 +87,7 @@ enum class Orientation
 /// @brief Function to check if three points form a clockwise or counterclockwise order
 template <typename T> Orientation getOrientation(const Point<T> &p1, const Point<T> &p2, const Point<T> &p3) noexcept
 {
-    auto cross_product = crossProduct(p1, p2, p3);
+    const auto cross_product = crossProduct(p1, p2, p3);
 
     if (cross_product > 0)
     {
@@ -137,7 +137,7 @@ std::vector<int> constructGrahamAndrewConvexHull(const std::vector<Point<T>> &po
     std::swap(sorted_points[0], sorted_points[min_index]);
 
     // Sort the remaining points based on their polar angle with respect to the reference point
-    const auto &ref_point = sorted_points[0];
+    const Point<T> &ref_point = sorted_points[0];
     std::sort(
         sorted_points.begin() + 1, sorted_points.end(),
         [&](const Point<T> &p1, const Point<T> &p2) noexcept -> bool { return comparePolarAngle(ref_point, p1, p2); });
