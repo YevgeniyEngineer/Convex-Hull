@@ -1,7 +1,7 @@
 # Convex-Hull
 Implementation of 2D and 3D Convex Hull algorithms in C++.
 
-# Build and Run
+## Build and Run
 ```bash
 mkdir build
 cd build
@@ -10,7 +10,7 @@ make
 ./test_convex_hull
 ```
 
-# Example Output
+## Example Output
 ```bash
 ./test_convex_hull 
 Generating convex hull from 99999 points
