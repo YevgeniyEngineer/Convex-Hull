@@ -59,16 +59,10 @@ int main()
         {
             std::cout << "Hull is oriented clockwise" << std::endl;
         }
-
-        if (orientation == Orientation::COUNTERCLOCKWISE)
-        {
-            std::cout << "Hull is oriented counterclockwise" << std::endl;
-        }
-        else if (orientation == Orientation::CLOCKWISE)
-        {
-            std::cout << "Hull is oriented clockwise" << std::endl;
-        }
     };
+
+    // Print number of points before starting
+    std::cout << "Generating convex hull from " << num_pts << " points" << std::endl;
 
     // Construct convex hull using GRAHAM SCAN
     {

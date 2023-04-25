@@ -316,25 +316,33 @@ std::vector<int> constructJarvisMarchConvexHull(const std::vector<Point<T>> &poi
 }
 
 /// @brief Partitions vector into approximately n equal pieces
-template <typename T> std::vector<std::vector<T>> partitionVector(const std::vector<T> &vec, int number_of_subsets)
+template <typename T>
+std::pair<std::vector<std::vector<T>>, std::vector<std::vector<int>>> partitionVector(const std::vector<T> &vec,
+                                                                                      int number_of_subsets)
 {
     int size = vec.size();
     int subset_size = size / number_of_subsets;
     int remainder = size % number_of_subsets;
 
     std::vector<std::vector<T>> subsets(number_of_subsets);
+    std::vector<std::vector<int>> subset_indices(number_of_subsets);
     int current = 0;
     for (int i = 0; i < number_of_subsets; ++i)
     {
         int current_subset_size = subset_size + (i < remainder ? 1 : 0);
+
         subsets[i].reserve(current_subset_size);
+        subset_indices[i].reserve(current_subset_size);
+
         for (int j = 0; j < current_subset_size; ++j)
         {
-            subsets[i].push_back(vec[current++]);
+            subsets[i].push_back(vec[current]);
+            subset_indices[i].push_back(current);
+            ++current;
         }
     }
 
-    return subsets;
+    return std::make_pair(subsets, subset_indices);
 }
 
 /// @brief Construct Convex Hull using Chan's algorithm, based on Andrew's Monotone Chain and Jarvis March
@@ -348,12 +356,11 @@ template <typename T> std::vector<int> constructChanConvexHull(std::vector<Point
     }
 
     // Find the number of subsets to split the points into
-    // const int number_of_subsets = static_cast<int>(std::ceil(std::sqrt(n)));
-    const int number_of_subsets = static_cast<int>(std::ceil(std::log(n) / std::log(2)));
+    const int number_of_subsets = static_cast<int>(std::ceil(std::sqrt(n)));
     const int number_of_points_within_subset = n / number_of_subsets;
 
     // Divide points into number_of_subsets subsets each containing number_of_points_within_subset points
-    const auto subsets = partitionVector(points, number_of_subsets);
+    const auto [subsets, subset_indices] = partitionVector(points, number_of_subsets);
 
     // Compute convex hull using Graham's scan for each subset
     std::vector<std::vector<int>> convex_hulls_indices(subsets.size());
@@ -370,12 +377,15 @@ template <typename T> std::vector<int> constructChanConvexHull(std::vector<Point
     std::vector<int> merged_indices;
     merged_indices.reserve(convex_hulls_indices.size() * number_of_points_within_subset);
 
-    for (const auto &indices : convex_hulls_indices)
+    for (int subset_no = 0; subset_no < subsets.size(); ++subset_no)
     {
-        for (const int idx : indices)
+        const auto &indices = convex_hulls_indices[subset_no];
+        const auto &original_indices = subset_indices[subset_no];
+        for (const auto idx : indices)
         {
-            merged_points.push_back(points[idx]);
-            merged_indices.push_back(idx);
+            const auto original_index = original_indices[idx];
+            merged_points.push_back(points[original_index]);
+            merged_indices.push_back(original_index);
         }
     }
 
@@ -390,7 +400,6 @@ template <typename T> std::vector<int> constructChanConvexHull(std::vector<Point
     }
     return original_indices;
 }
-
 /// @brief Main method that calls relevant functions based on provided inputs
 template <typename T>
 std::vector<int> constructConvexHull(const std::vector<Point<T>> &points,
