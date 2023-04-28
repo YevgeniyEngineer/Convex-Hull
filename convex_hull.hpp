@@ -29,6 +29,13 @@ enum class ConvexHullAlgorithm
     CHAN
 };
 
+/// @brief Class specifying whether to close convex hull
+enum class ConvexHullReturnType
+{
+    OPEN,
+    ENCLOSED
+};
+
 /// @brief Point type used in calculation of 2D Convex Hull
 template <typename T> struct Point
 {
@@ -119,7 +126,8 @@ inline Orientation getOrientation(const Point<T> &p1, const Point<T> &p2, const 
 
 /// @brief Return convex hull indices calculated using Graham-Andrew algorithm
 template <typename T>
-std::vector<int> constructGrahamScanConvexHull(const std::vector<Point<T>> &points, Orientation orientation)
+std::vector<int> constructGrahamScanConvexHull(const std::vector<Point<T>> &points, Orientation orientation,
+                                               ConvexHullReturnType return_type)
 {
     int n = static_cast<int>(points.size());
     if (n < 3)
@@ -189,12 +197,21 @@ std::vector<int> constructGrahamScanConvexHull(const std::vector<Point<T>> &poin
     {
         std::reverse(original_indices.begin(), original_indices.end());
     }
+
+    // Check if hull should be enclosed
+    if (return_type == ConvexHullReturnType::ENCLOSED)
+    {
+        original_indices.reserve(original_indices.size() + 1);
+        original_indices.push_back(original_indices[0]);
+    }
+
     return original_indices;
 }
 
 /// @brief Andrew's Monotone Chain convex hull algorithm
 template <typename T>
-std::vector<int> constructAndrewMonotoneChainConvexHull(const std::vector<Point<T>> &points, Orientation orientation)
+std::vector<int> constructAndrewMonotoneChainConvexHull(const std::vector<Point<T>> &points, Orientation orientation,
+                                                        ConvexHullReturnType return_type)
 {
     int n = static_cast<int>(points.size());
     if (n < 3)
@@ -253,12 +270,21 @@ std::vector<int> constructAndrewMonotoneChainConvexHull(const std::vector<Point<
     {
         std::reverse(hull_indices.begin(), hull_indices.end());
     }
+
+    // Check if hull should be enclosed
+    if (return_type == ConvexHullReturnType::ENCLOSED)
+    {
+        hull_indices.reserve(hull_indices.size() + 1);
+        hull_indices.push_back(hull_indices[0]);
+    }
+
     return hull_indices;
 }
 
 /// @brief Construct Convex Hull using Jarvis March algorithm
 template <typename T>
-std::vector<int> constructJarvisMarchConvexHull(const std::vector<Point<T>> &points, Orientation orientation)
+std::vector<int> constructJarvisMarchConvexHull(const std::vector<Point<T>> &points, Orientation orientation,
+                                                ConvexHullReturnType return_type)
 {
     int n = static_cast<int>(points.size());
     if (n < 3)
@@ -312,6 +338,14 @@ std::vector<int> constructJarvisMarchConvexHull(const std::vector<Point<T>> &poi
     {
         std::reverse(hull_indices.begin(), hull_indices.end());
     }
+
+    // Check if hull should be enclosed
+    if (return_type == ConvexHullReturnType::ENCLOSED)
+    {
+        hull_indices.reserve(hull_indices.size() + 1);
+        hull_indices.push_back(hull_indices[0]);
+    }
+
     return hull_indices;
 }
 
@@ -347,7 +381,8 @@ std::pair<std::vector<std::vector<T>>, std::vector<std::vector<int>>> partitionV
 
 /// @brief Construct Convex Hull using Chan's algorithm, based on Andrew's Monotone Chain and Jarvis March
 template <typename T>
-std::vector<int> constructChanConvexHull(const std::vector<Point<T>> &points, Orientation orientation)
+std::vector<int> constructChanConvexHull(const std::vector<Point<T>> &points, Orientation orientation,
+                                         ConvexHullReturnType return_type)
 {
     int n = static_cast<int>(points.size());
     if (n < 3)
@@ -368,7 +403,8 @@ std::vector<int> constructChanConvexHull(const std::vector<Point<T>> &points, Or
     for (int subset_no = 0; subset_no < subsets.size(); ++subset_no)
     {
         // Construct convex hull for current subset
-        convex_hulls_indices[subset_no] = constructAndrewMonotoneChainConvexHull(subsets[subset_no], orientation);
+        convex_hulls_indices[subset_no] =
+            constructAndrewMonotoneChainConvexHull(subsets[subset_no], orientation, ConvexHullReturnType::OPEN);
     }
 
     // Merge convex hull points
@@ -391,7 +427,8 @@ std::vector<int> constructChanConvexHull(const std::vector<Point<T>> &points, Or
     }
 
     // Merge convex hulls using Jarvis March and obtain the indices of the points in the hull
-    std::vector<int> hull_indices = constructJarvisMarchConvexHull(merged_points, orientation);
+    std::vector<int> hull_indices =
+        constructJarvisMarchConvexHull(merged_points, orientation, ConvexHullReturnType::OPEN);
 
     // Convert the indices of the merged_points vector back to the original points vector
     std::vector<int> original_indices(hull_indices.size());
@@ -399,6 +436,14 @@ std::vector<int> constructChanConvexHull(const std::vector<Point<T>> &points, Or
     {
         original_indices[i] = merged_indices[hull_indices[i]];
     }
+
+    // Check if hull should be enclosed
+    if (return_type == ConvexHullReturnType::ENCLOSED)
+    {
+        original_indices.reserve(original_indices.size() + 1);
+        original_indices.push_back(original_indices[0]);
+    }
+
     return original_indices;
 }
 
@@ -406,7 +451,8 @@ std::vector<int> constructChanConvexHull(const std::vector<Point<T>> &points, Or
 template <typename T>
 std::vector<int> constructConvexHull(const std::vector<Point<T>> &points,
                                      ConvexHullAlgorithm algorithm = ConvexHullAlgorithm::GRAHAM_SCAN,
-                                     Orientation orientation = Orientation::COUNTERCLOCKWISE)
+                                     Orientation orientation = Orientation::COUNTERCLOCKWISE,
+                                     ConvexHullReturnType return_type = ConvexHullReturnType::OPEN)
 {
     if (orientation == Orientation::COLLINEAR)
     {
@@ -417,16 +463,16 @@ std::vector<int> constructConvexHull(const std::vector<Point<T>> &points,
     switch (algorithm)
     {
     case ConvexHullAlgorithm::GRAHAM_SCAN: {
-        return constructGrahamScanConvexHull(points, orientation);
+        return constructGrahamScanConvexHull(points, orientation, return_type);
     }
     case ConvexHullAlgorithm::ANDREW_MONOTONE_CHAIN: {
-        return constructAndrewMonotoneChainConvexHull(points, orientation);
+        return constructAndrewMonotoneChainConvexHull(points, orientation, return_type);
     }
     case ConvexHullAlgorithm::JARVIS_MARCH: {
-        return constructJarvisMarchConvexHull(points, orientation);
+        return constructJarvisMarchConvexHull(points, orientation, return_type);
     }
     case ConvexHullAlgorithm::CHAN: {
-        return constructChanConvexHull(points, orientation);
+        return constructChanConvexHull(points, orientation, return_type);
     }
     default: {
         return {};
